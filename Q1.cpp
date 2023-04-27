@@ -2,285 +2,9 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <iomanip>
 
 using namespace std;
-
-class Customer
-{
-private:
-    static int TotalCustomers;
-    int SrNo;
-    string Name;
-    string Email;
-public:
-    Customer(string name = "", string email = "") : Name(name), Email(email)
-    {
-        TotalCustomers++;
-        SrNo = TotalCustomers;
-    }
-};
-
-int Customer::TotalCustomers = 0;
-
-class Supplier;
-
-Supplier Suppliers[10] = {
-    Supplier("ABC Fruits", "Apple"),
-    Supplier("XYZ Farms", "Banana"),
-    Supplier("Green Grocers", "Cherry"),
-    Supplier("Fresh Produce Co.", "Durian"),
-    Supplier("Juicy Farms", "Elderberry"),
-    Supplier("Sunny Orchards", "Fig"),
-    Supplier("Harvest Time", "Grape"),
-    Supplier("Berrylicious", "Huckleberry"),
-    Supplier("Sweet Treats", "Kiwi"),
-    Supplier("Tropical Delights", "Mango")
-};
-
-//the product class
-class Product;
-
-ostream& operator<<(ostream& os, const Product& product);
-
-//Inventory
-class Inventory;
-
-Inventory Inventory1("Inventory1");
-
-class InventoryReport
-{
-private:
-    Inventory inventory;
-    int TotalPriceOfAllProducts;
-public:
-
-    //allow for products that need ordering
-    //allow for products that have a stock of more than 1000
-    //allow to show the products by supplier
-
-
-};
-
-class Cart;
-
-void Manager();
-
-void SalesMan()
-{
-    //--to make a cart
-    //--allow to add item to cart
-    //allow to say done to the cart
-    //allow to empty the cart
-    //allow to get the total price of cart
-    //allow to use discounts
-    //allow to do refunds
-    bool ExitFromSalesman = 0;
-    while (!ExitFromSalesman)
-    {
-        int Action = 0;
-        cout << ")To make a cart press 1\n";
-        cout << ")To issue a refund press 2\n";
-        cout << "To go to main press 3\n==>";
-        cin >> Action;
-        switch (Action)
-        {
-        case 1:
-            {
-                Cart cart(Inventory1);
-                bool ExitFromCart = 0;
-                while (!ExitFromCart)
-                {
-                    int CartAction = 0;
-                    cout << ")To add item to cart press 1\n";
-                    cout << ")To remove item in cart press 2\n";
-                    cout << ")To Update Quantity of an item in Cart press 3\n";
-                    cout << ")To empty cart press 4\n";
-                    cout << ")To get Total price of cart press 5\n";
-                    cout << ")To apply discount press 6\n";
-                    cout << ")To make a new cart press 7\n";
-                    cout << ")To go back press 8\n==>";
-                    cin >> CartAction;
-                    switch (CartAction)
-                    {
-                    case 1:
-                        {
-                            Product Added;
-                            string name;
-                            int quantity = 0;
-                            cout << "Enter Product Name: ";
-                            cin.ignore();
-                            getline(cin, name);
-                            cout << "Enter Quantity: ";
-                            cin >> quantity;
-                            while (quantity < 0)
-                            {
-                                if (quantity < 0)
-                                {
-                                    cout << "invalid quantity\n";
-                                }
-                                cout << "Enter Quantity: ";
-                                cin >> quantity;
-                            }
-                            Added.setName(name);
-                            Added.setQuantity(quantity);
-                            cart.AddToCart(Added);
-                            cart.Print();
-                            Inventory1.Print();
-                            break;
-                        }
-                    case 2:
-                        {
-                            Product Removed;
-                            string name;
-                            cout << "Enter Product Name: ";
-                            cin.ignore();
-                            getline(cin, name);
-                            Removed.setName(name);
-                            int quantity1 = cart.RemoveFromCart(Removed);
-                            //cout << quantity1 << endl;
-                            Product* productFromInv = Inventory1.FindProduct(Removed);
-                            productFromInv->setQuantity(productFromInv->getQuantity() + quantity1);
-                            cart.Print();
-                            cart.PrintInventory();
-                            break;
-                        }
-                    case 3:
-                        {
-                            Product Update;
-                            string name;
-                            int quantity = 0;
-                            cout << "Enter Product Name: ";
-                            cin.ignore();
-                            getline(cin, name);
-                            cout << "Enter Quantity: ";
-                            cin >> quantity;
-                            while (quantity < 0)
-                            {
-                                if (quantity < 0)
-                                {
-                                    cout << "invalid quantity\n";
-                                }
-                                cout << "Enter Quantity: ";
-                                cin >> quantity;
-                            }
-                            Update.setName(name);
-                            Update.setQuantity(quantity);
-                            cart.UpdateProduct(Update);
-                            cart.Print();
-                            cart.PrintInventory();
-                            break;
-                        }
-                    case 4:
-                        {
-                            cart.EmptyCart();
-                            cart.Print();
-                            cart.PrintInventory();
-                            break;
-                        }
-                    case 5:
-                        {
-                            cout << "The Total Bill is : "<<cart.GetTotalPrice()<<endl;
-                            break;
-                        }
-                    case 6:
-                        {
-
-                            break;
-                        }
-                    case 7:
-                        {
-
-                            break;
-                        }
-                    case 8:
-                        {
-
-                            break;
-                        }
-                    default:
-                        cout << "Invalid Input\n";
-                    }
-                }
-                break;
-            }
-        case 2:
-            {
-                Product Refunded;
-                string name;
-                int quantity = 0;
-                cout << "Enter Product Name to be refunded: ";
-                cin.ignore();
-                getline(cin, name);
-                cout << "Enter Quantity to be refunded: ";
-                cin >> quantity;
-                while (quantity < 0)
-                {
-                    if (quantity < 0)
-                    {
-                        cout << "invalid quantity\n";
-                    }
-                    cout << "Enter Quantity: ";
-                    cin >> quantity;
-                }
-                Refunded.setName(name);
-                Refunded.setQuantity(quantity);
-                if (Inventory1.isPresent(Refunded))
-                {
-                    Inventory1.IncreaseProductQuantity(Refunded);
-                }
-                else
-                {
-                    int price;
-                    cout << "Enter Price of the product: ";
-                    cin >> price;
-                    while (price < 0)
-                    {
-                        if (price < 0)
-                        {
-                            cout << "invalid quantity\n";
-                        }
-                        cout << "Enter Quantity: ";
-                        cin >> price;
-                    }
-                    Refunded.setBasePrice(price);
-                    Inventory1.AddProduct(Refunded);
-                }
-                Inventory1.Print();
-                break;
-            }
-        default:
-            cout << "Invalid Input\n";
-        }
-    }
-}
-
-int main()
-{
-    int selection=0;
-    while (selection < 1 || selection>3)
-    {
-        cout << ")Welcome to a Cash And Carry Management System.\n";
-        cout << ")For Manager Press 1\n";
-        cout << ")For SalesMan Press 2\n";
-        cout << ")To Exit Press 3\n";
-        cout << "==>";
-        cin >> selection;
-        switch (selection)
-        {
-        case 1:
-            Manager();
-            break;
-        case 2:
-            SalesMan();
-            break;
-        case 3:
-            return 0;
-            break;
-        default:
-            cout << "Wrong input\n";
-        }
-    }
-}
 
 class Supplier
 {
@@ -298,22 +22,40 @@ public:
     }
 };
 
+Supplier Suppliers[10] = {
+    Supplier("ABC Fruits", "Apple"),
+    Supplier("XYZ Farms", "Banana"),
+    Supplier("Green Grocers", "Cherry"),
+    Supplier("Fresh Produce Co.", "Durian"),
+    Supplier("Juicy Farms", "Elderberry"),
+    Supplier("Sunny Orchards", "Fig"),
+    Supplier("Harvest Time", "Grape"),
+    Supplier("Berrylicious", "Huckleberry"),
+    Supplier("Sweet Treats", "Kiwi"),
+    Supplier("Tropical Delights", "Mango")
+};
+
+//the product class
 class Product
 {
 private:
     string Name;
     int Quantity;
     int BasePrice;
-    char location;
+    char Location;
+    int DiscountPercent;
+    double PriceAfterDiscount;
 public:
-    Product(string name = "", int base = 0, int quantity = 0) : Quantity(quantity), BasePrice(base), Name(name)
+    Product(string name = "", int base = 0, int quantity = 0, int Percent = 0) : Quantity(quantity), BasePrice(base), Name(name), DiscountPercent(Percent)
     {
         if (Name[0] >= 'a' && Name[0] <= 'z')
         {
             Name[0] = Name[0] - ('a' - 'A');
         }
-        location = 'A' + rand() % ('Z' - 'A');
+        Location = 'A' + rand() % ('Z' - 'A');
+        PriceAfterDiscount = (double)(BasePrice) * ((double)(DiscountPercent) / 100.0);
     }
+    
     //getters
     string getName() const {
         return Name;
@@ -323,6 +65,9 @@ public:
     }
     int getBasePrice() const {
         return BasePrice;
+    }
+    char getLocation() const {
+        return Location;
     }
     // setters
     void setName(string name) {
@@ -337,8 +82,13 @@ public:
     }
     void setBasePrice(int basePrice) {
         BasePrice = basePrice;
+        PriceAfterDiscount = (double)(BasePrice) * ((double)(DiscountPercent) / 100.0);
     }
-
+    void setDiscount(int discount) {
+        DiscountPercent = discount;
+        PriceAfterDiscount = (double)(BasePrice) * ((double)(DiscountPercent) / 100.0);
+        cout << PriceAfterDiscount << endl;
+    }
     bool operator==(const Product& product)
     {
         if (this->Name == product.Name)
@@ -350,15 +100,9 @@ public:
     friend ostream& operator<<(ostream& os, const Product& product);
 };
 
-ostream& operator<<(ostream& os, const Product& product)
-{
-    os << "\nName: " << product.Name;
-    os << "   Quantity: " << product.Quantity;
-    os << "   BasePrice: " << product.BasePrice;
-    os << "   Location: " << product.location << endl;
-    return os;
-}
+ostream& operator<<(ostream& os, const Product& product);
 
+//Inventory
 class Inventory
 {
 protected:
@@ -625,9 +369,11 @@ public:
     }
 };
 
+Inventory Inventory1("Inventory1");
+
 class Cart
 {
-private:
+protected:
     Inventory& inventory;//aggregation
     Product* SelectedProducts;
     int NoOfSelected;
@@ -699,6 +445,10 @@ public:
     ~Cart()
     {
         delete[] SelectedProducts;
+    }
+    int GetSelected()
+    {
+        return NoOfSelected;
     }
     void AddToCart(const Product& product)
     {
@@ -834,9 +584,252 @@ public:
         }
         NoOfSelected = 0;
     }
+    Product* getProductFromIndex(int i)
+    {
+        return &SelectedProducts[i];
+    }
+    void DeleteCart()
+    {
+        for (int i = 0; i < NoOfSelected; i++)
+        {
+            Product empty;
+            SelectedProducts[i] = empty;
+        }
+        NoOfSelected = 0;
+    }
     //void ApplyDiscount();
     //void PrintSelectedProducts();
 };
+
+class Report : public Inventory
+{
+protected:
+    int TotalPrice;
+    virtual void Display() = 0;
+    int GetTotalPrice()
+    {
+        int TotalPrice = 0;
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            TotalPrice += (AllProducts[i].getQuantity() * AllProducts[i].getBasePrice());
+        }
+        this->TotalPrice = TotalPrice;
+        return TotalPrice;
+    }
+    void SortByProducts()
+    {
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            for (int j = i; j < NoOfProducts; j++)
+            {
+                if (AllProducts[i].getName() > AllProducts[j].getName())
+                {
+                    Product temp = AllProducts[i];
+                    AllProducts[i] = AllProducts[j];
+                    AllProducts[j] = temp;
+                }
+            }
+        }
+    }
+    Report(int total = 0) : TotalPrice(total) {}
+};
+
+class SalesReport : public Report
+{
+    Cart& cart;
+public:
+    SalesReport(Cart& car, int total = 0) : cart(car), Report(total)
+    {
+        this->NoOfProducts = 0;
+        this->AllProducts = new Product[5];
+    }
+    void AddAllSales()
+    {
+        for (int i = 0; i < cart.GetSelected(); i++)
+        {
+            AddProduct(*cart.getProductFromIndex(i));
+        }
+    }
+    void Display()
+
+    {
+        cout << setw(50) << "Sales REPORT" << endl;
+        cout << "Displaying by Products\n";
+        SortByProducts();
+        cout << setw(80) << setfill('-') << "" << endl;
+        cout << setfill(' ');
+        cout << setw(15) << "Product Name" << setw(20) << "Location" << setw(15) << "Quantity" << setw(15) << "Base Price" << setw(20) << "Total Value" << endl;
+        cout << setw(80) << setfill('-') << "" << endl;
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            cout << setw(15) << AllProducts[i].getName() << setw(20) << AllProducts[i].getLocation() << setw(15) << AllProducts[i].getQuantity() << setw(15) << AllProducts[i].getBasePrice() << setw(20) << (AllProducts[i].getQuantity() * AllProducts[i].getBasePrice()) << endl;
+        }
+        cout << setw(80) << setfill('-') << "" << endl;
+
+        cout << setw(65) << "Total Value of All Products: " << setw(15) << GetTotalPrice() << endl;
+        cout << setw(80) << setfill('-') << "" << endl;
+    }
+};
+
+class InventoryReport : public Report
+{
+private:
+    Inventory& Inv;//aggreagation
+    //string Name;
+    //Product* AllProducts;//composition
+    //int NoOfProducts;
+    //Supplier* suppliers;//aggregation
+public:
+    InventoryReport(Inventory& inv, int total = 0) : Inv(inv), Report(total)
+    {
+        this->NoOfProducts = Inv.getNoOfProducts();
+        this->AllProducts = new Product[this->NoOfProducts];
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            Product* p = Inv.getProductFromIndex(i);
+            this->AllProducts[i] = *p;
+        }
+    }
+    int GetTotalPrice()
+    {
+        int TotalPrice = 0;
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            TotalPrice += (AllProducts[i].getQuantity() * AllProducts[i].getBasePrice());
+        }
+        this->TotalPrice = TotalPrice;
+        return TotalPrice;
+    }
+    void SortByLocation()
+    {
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            for (int j = i; j < NoOfProducts; j++)
+            {
+                if (AllProducts[i].getLocation() > AllProducts[j].getLocation())
+                {
+                    Product temp = AllProducts[i];
+                    AllProducts[i] = AllProducts[j];
+                    AllProducts[j] = temp;
+                }
+            }
+        }
+    }
+    void Display()
+    {
+        cout << setw(50) << "INVENTORY REPORT" << endl;
+        cout << "Displaying by Products\n";
+        SortByProducts();
+        cout << setw(80) << setfill('-') << "" << endl;
+        cout << setfill(' ');
+        cout << setw(15) << "Product Name" << setw(20) << "Location" << setw(15) << "Quantity" << setw(15) << "Base Price" << setw(20) << "Total Value" << endl;
+        cout << setw(80) << setfill('-') << "" << endl;
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            cout << setw(15) << AllProducts[i].getName() << setw(20) << AllProducts[i].getLocation() << setw(15) << AllProducts[i].getQuantity() << setw(15) << AllProducts[i].getBasePrice() << setw(20) << (AllProducts[i].getQuantity() * AllProducts[i].getBasePrice()) << endl;
+        }
+        cout << setw(80) << setfill('-') << "" << endl;
+        
+        cout << "Displaying by Location\n";
+        SortByLocation();
+        cout << setw(80) << setfill('-') << "" << endl;
+        cout << setfill(' ');
+        cout << setw(15) << "Product Name" << setw(20) << "Location" << setw(15) << "Quantity" << setw(15) << "Base Price" << setw(20) << "Total Value" << endl;
+        cout << setw(80) << setfill('-') << "" << endl;
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            cout << setw(15) << AllProducts[i].getName() << setw(20) << AllProducts[i].getLocation() << setw(15) << AllProducts[i].getQuantity() << setw(15) << AllProducts[i].getBasePrice() << setw(20) << (AllProducts[i].getQuantity() * AllProducts[i].getBasePrice()) << endl;
+        }
+        cout << setw(80) << setfill('-') << "" << endl;
+
+        cout << setw(65) << "Total Value of All Products: " << setw(15) << GetTotalPrice() << endl;
+        cout << setw(80) << setfill('-') << "" << endl;
+    }
+};
+
+class ProfitReport : public Report
+{
+    SalesReport& Sales;
+public:
+    ProfitReport(SalesReport& sales, int total = 0) : Sales(sales), Report(total)
+    {
+        this->NoOfProducts = Sales.getNoOfProducts();
+        this->AllProducts = new Product[this->NoOfProducts];
+        for (int i = 0; i < NoOfProducts; i++)
+        {
+            Product* p = Sales.getProductFromIndex(i);
+            this->AllProducts[i] = *p;
+        }
+    }
+    void Display()
+    {
+        cout << setw(50) << "PROFIT REPORT" << endl;
+        cout << "Displaying by Product" << endl;
+
+        SortByProducts();
+
+        cout << setfill('-') << setw(100) << "" << endl;
+        cout << setfill(' ') << setw(20) << "Product" << setw(20) << "Total Cost" << setw(20) << "Total Profit" << endl;
+        cout << setfill('-') << setw(100) << "" << endl;
+
+        for (int i = 0; i < NoOfProducts; i++) {
+            int totalCost = AllProducts[i].getQuantity() * AllProducts[i].getBasePrice();
+            int totalProfit = totalCost;
+
+            cout << setfill(' ') << setw(20) << AllProducts[i].getName() << setw(20) << totalCost << setw(20) << totalProfit << endl;
+        }
+
+        cout << setfill('-') << setw(100) << "" << endl;
+        cout << "Total Profit: " << GetTotalPrice() << endl;
+        cout << setfill('-') << setw(100) << "" << endl;
+    }
+};
+
+Cart cart(Inventory1);
+SalesReport salesReport(cart);
+
+void Manager();
+
+void SalesMan();
+
+int main()
+{
+    int selection=0;
+    while (selection < 1 || selection>3)
+    {
+        cout << ")Welcome to a Cash And Carry Management System.\n";
+        cout << ")For Manager Press 1\n";
+        cout << ")For SalesMan Press 2\n";
+        cout << ")To Exit Press 3\n";
+        cout << "==>";
+        cin >> selection;
+        switch (selection)
+        {
+        case 1:
+            Manager();
+            break;
+        case 2:
+            SalesMan();
+            break;
+        case 3:
+            return 0;
+            break;
+        default:
+            cout << "Wrong input\n";
+        }
+    }
+}
+
+ostream& operator<<(ostream& os, const Product& product)
+{
+    os << "\nName: " << product.Name;
+    os << "   Quantity: " << product.Quantity;
+    os << "   BasePrice: " << product.BasePrice;
+    os << "   Location: " << product.Location;
+    os << "   DiscountedPercentage: " << product.DiscountPercent <<"%";
+    os << "   PriceAfterDiscount: " << product.PriceAfterDiscount << endl;
+    return os;
+}
 
 void Manager()
 {
@@ -850,7 +843,10 @@ void Manager()
         cout << ")To update a product quantity press 3\n";
         cout << ")To update a product price press 4\n";
         cout << ")To check the products that need ordering press 5\n";
-        cout << ")To exit to main press 6\n==>";
+        cout << ")To get Inventory report press 6\n";
+        cout << ")To get Sales report press 7\n";
+        cout << ")To get Profit report press 8\n";
+        cout << ")To exit to main press 9\n==>";
         int Action = 0;
         cin >> Action;
         switch (Action)
@@ -866,6 +862,27 @@ void Manager()
             ToBeAdded.setName(name);
             cout << "Enter Product price: ";
             cin >> price;
+            int discount=0;
+            while (discount < 1 || discount > 6)
+            {
+                cout << "Enter The discount:\n";
+                cout << "For 10% press 1\n";
+                cout << "For 20% press 2\n";
+                cout << "For 30% press 3\n";
+                cout << "For 40% press 4\n";
+                cout << "For 50% press 5\n";
+                cout << "For NONE press 6\n";
+                cin >> discount;
+                if (discount < 1 || discount > 6)
+                {
+                    cout << "Invalid\n";
+                }
+            }
+            if (discount != 6)
+            {
+                ToBeAdded.setDiscount(discount * 10);
+            }
+            ToBeAdded.setDiscount(discount*10);
             ToBeAdded.setBasePrice(price);
             Inventory1.AddProduct(ToBeAdded);
             break;
@@ -958,6 +975,23 @@ void Manager()
             break;
         }
         case 6:
+            {
+                InventoryReport inventoryReport(Inventory1);
+                inventoryReport.Display();
+                break;
+            }
+        case 7:
+            {
+                salesReport.Display();
+                break;
+            }
+        case 8:
+            {
+                ProfitReport profitReport(salesReport);
+                profitReport.Display();
+                break;
+            }
+        case 9:
             main();
             break;
         default:
@@ -966,6 +1000,200 @@ void Manager()
         if (DontShowInventory == 0)
         {
             Inventory1.Print();
+        }
+    }
+}
+
+void SalesMan()
+{
+    //--to make a cart
+    //--allow to add item to cart
+    //allow to say done to the cart
+    //allow to empty the cart
+    //allow to get the total price of cart
+    //allow to use discounts
+    //allow to do refunds
+    bool ExitFromSalesman = 0;
+    while (!ExitFromSalesman)
+    {
+        int Action = 0;
+        cout << ")To make a cart press 1\n";
+        cout << ")To issue a refund press 2\n";
+        cout << "To go to main press 3\n==>";
+        cin >> Action;
+        switch (Action)
+        {
+        case 1:
+        {
+            bool ExitFromCart = 0;
+            while (!ExitFromCart)
+            {
+                int CartAction = 0;
+                cout << ")To add item to cart press 1\n";
+                cout << ")To remove item in cart press 2\n";
+                cout << ")To Update Quantity of an item in Cart press 3\n";
+                cout << ")To empty cart press 4\n";
+                cout << ")To get Total price of cart press 5\n";
+                cout << ")To apply discount press 6\n";
+                cout << ")To make a new cart press 7\n";
+                cout << ")To confirm payment press 8\n";
+                cout << ")To go back press 9\n==>";
+                cin >> CartAction;
+                switch (CartAction)
+                {
+                case 1:
+                {
+                    Product Added;
+                    string name;
+                    int quantity = 0;
+                    cout << "Enter Product Name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    cout << "Enter Quantity: ";
+                    cin >> quantity;
+                    while (quantity < 0)
+                    {
+                        if (quantity < 0)
+                        {
+                            cout << "invalid quantity\n";
+                        }
+                        cout << "Enter Quantity: ";
+                        cin >> quantity;
+                    }
+                    Added.setName(name);
+                    Added.setQuantity(quantity);
+                    cart.AddToCart(Added);
+                    cart.Print();
+                    Inventory1.Print();
+                    break;
+                }
+                case 2:
+                {
+                    Product Removed;
+                    string name;
+                    cout << "Enter Product Name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    Removed.setName(name);
+                    int quantity1 = cart.RemoveFromCart(Removed);
+                    //cout << quantity1 << endl;
+                    Product* productFromInv = Inventory1.FindProduct(Removed);
+                    productFromInv->setQuantity(productFromInv->getQuantity() + quantity1);
+                    cart.Print();
+                    cart.PrintInventory();
+                    break;
+                }
+                case 3:
+                {
+                    Product Update;
+                    string name;
+                    int quantity = 0;
+                    cout << "Enter Product Name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    cout << "Enter Quantity: ";
+                    cin >> quantity;
+                    while (quantity < 0)
+                    {
+                        if (quantity < 0)
+                        {
+                            cout << "invalid quantity\n";
+                        }
+                        cout << "Enter Quantity: ";
+                        cin >> quantity;
+                    }
+                    Update.setName(name);
+                    Update.setQuantity(quantity);
+                    cart.UpdateProduct(Update);
+                    cart.Print();
+                    cart.PrintInventory();
+                    break;
+                }
+                case 4:
+                case 7:
+                {
+                    cart.EmptyCart();
+                    cart.Print();
+                    cart.PrintInventory();
+                    break;
+                }
+                case 5:
+                {
+                    cout << "The Total Bill is : " << cart.GetTotalPrice() << endl;
+                    break;
+                }
+                case 6:
+                {
+
+                    break;
+                }
+                case 8:
+                {
+                    salesReport.AddAllSales();
+                    cart.DeleteCart();
+                    break;
+                }
+                case 9:
+                {
+                    ExitFromCart = 1;
+                    break;
+                }
+                default:
+                    cout << "Invalid Input\n";
+                }
+            }
+            break;
+        }
+        case 2:
+        {
+            Product Refunded;
+            string name;
+            int quantity = 0;
+            cout << "Enter Product Name to be refunded: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Enter Quantity to be refunded: ";
+            cin >> quantity;
+            while (quantity < 0)
+            {
+                if (quantity < 0)
+                {
+                    cout << "invalid quantity\n";
+                }
+                cout << "Enter Quantity: ";
+                cin >> quantity;
+            }
+            Refunded.setName(name);
+            Refunded.setQuantity(quantity);
+            if (Inventory1.isPresent(Refunded))
+            {
+                Inventory1.IncreaseProductQuantity(Refunded);
+            }
+            else
+            {
+                int price;
+                cout << "Enter Price of the product: ";
+                cin >> price;
+                while (price < 0)
+                {
+                    if (price < 0)
+                    {
+                        cout << "invalid quantity\n";
+                    }
+                    cout << "Enter Quantity: ";
+                    cin >> price;
+                }
+                Refunded.setBasePrice(price);
+                Inventory1.AddProduct(Refunded);
+            }
+            Inventory1.Print();
+            break;
+        }
+        case 3:
+            main();
+            break;
+        default:
+            cout << "Invalid Input\n";
         }
     }
 }
